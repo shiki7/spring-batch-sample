@@ -1,4 +1,5 @@
 # spring-batch-sample
+taskletモデルで実装
 
 
 ### Spring Batch アーキテクチャ参考
