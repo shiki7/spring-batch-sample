@@ -43,6 +43,7 @@ public class BatchConfig {
                 // .next(secondStep).on(ExitStatus.COMPLETED.getExitCode()).to(thirdStep)
                 .next(secondStep).on("*").to(thirdStep)
                 // .from(thirdStep).on("*").fail()
+                // ExitStatusの場合分けの検証(nextと挙動は一緒）
                 .from(thirdStep).on(ExitStatus.FAILED.getExitCode()).fail()
                 .from(thirdStep).on(ExitStatus.COMPLETED.getExitCode()).end()
                 // .from(secondStep).on("*").fail()
