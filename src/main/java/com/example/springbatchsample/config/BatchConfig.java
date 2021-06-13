@@ -1,11 +1,13 @@
 package com.example.springbatchsample.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
 public class BatchConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
-
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
@@ -39,9 +40,14 @@ public class BatchConfig {
     public Job combinationJob(Step firstStep, Step secondStep, Step thirdStep) {
         return jobBuilderFactory.get("combinationJob") //Job名を指定
                 .start(firstStep) //実行するStepを指定
-                .next(secondStep)
-//                .from(secondStep).on("*").fail()
-                .next(thirdStep)
+                // .next(secondStep).on(ExitStatus.COMPLETED.getExitCode()).to(thirdStep)
+                .next(secondStep).on("*").to(thirdStep)
+                // .from(thirdStep).on("*").fail()
+                .from(thirdStep).on(ExitStatus.FAILED.getExitCode()).fail()
+                .from(thirdStep).on(ExitStatus.COMPLETED.getExitCode()).end()
+                // .from(secondStep).on("*").fail()
+                // .next(thirdStep)
+                .end()
                 .build();
     }
 
@@ -58,7 +64,6 @@ public class BatchConfig {
                 .tasklet(secondTasklet) //実行するTaskletを指定
                 .build();
     }
-
 
     @Bean
     public Step thirdStep(Tasklet thirdTasklet) {

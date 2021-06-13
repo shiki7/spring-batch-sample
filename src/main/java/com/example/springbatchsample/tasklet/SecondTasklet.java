@@ -13,6 +13,7 @@ public class SecondTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         System.out.println("Second Tasklet!");
+        // throw new Exception("エラー");
         return RepeatStatus.FINISHED;
     }
 }
